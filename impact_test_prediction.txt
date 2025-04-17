@@ -1,0 +1,548 @@
+# Загрузка библиотек
+from pandas import read_csv
+from pandas.plotting import scatter_matrix
+from matplotlib import pyplot
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.model_selection import ValidationCurveDisplay
+from sklearn.naive_bayes import MultinomialNB, ComplementNB,BernoulliNB,GaussianNB
+from sklearn.model_selection import cross_val_score
+from sklearn.pipeline import Pipeline
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_classif
+from sklearn.svm import LinearSVC
+from sklearn.feature_selection import SelectFromModel
+import pandas as pd
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import root_mean_squared_error,mean_absolute_error,mean_squared_log_error,log_loss
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import classification_report
+from sklearn.metrics import log_loss
+from matplotlib.colors import ListedColormap
+
+from sklearn.datasets import make_circles, make_classification, make_moons
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier,MLPRegressor
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV
+import warnings
+warnings.filterwarnings("ignore")
+filename = r'P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\impact_data 20aug test ml.xlsx'
+filename = r"C:\work\статья\impact_data_reduced2.xlsx"
+filename = r"C:\work\статья\impact_data.xlsx"
+# filename = r'C:\work\статья\impact_data-289(wo27).xlsx'
+# filename = r"P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\обработка кривых\impact_data_bid27.xlsx"
+
+
+# filename=r"C:\work\статья\impact_data-mini.xlsx"
+# filename=r"C:\work\статья\impact_data 10mm.xlsx"
+# filename=r"C:\work\статья\impact_data_reduced3.xlsx"
+# filename=r"C:\work\статья\impact_data.xlsx"
+# filename = r"C:\work\python\ML\test.xlsx"
+# # Загрузка датасета
+# url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
+# names = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'class']
+# dataset = read_csv(url, names=names)
+#
+# # Разделение датасета на обучающую и контрольную выборки
+# array = dataset.values
+#
+# # Выбор первых 4-х столбцов
+# X = array[:,0:4]
+#
+# # Выбор 5-го столбца
+# y = array[:,4]
+#
+# # Разделение X и y на обучающую и контрольную выборки
+# X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.20, random_state=1)
+#
+# # Загружаем алгоритмы моделей
+# models = []
+# models.append(('LR', LogisticRegression(solver='liblinear', multi_class='ovr')))
+# models.append(('LDA', LinearDiscriminantAnalysis()))
+# models.append(('KNN', KNeighborsClassifier()))
+# models.append(('CART', DecisionTreeClassifier()))
+# models.append(('NB', GaussianNB()))
+# models.append(('SVM', SVC(gamma='auto')))
+#
+# mnb=MultinomialNB()
+# svc=SVC()
+# # lsvc=LinearSVC()
+# cnb = BernoulliNB()
+# gnb = GaussianNB()
+#
+# # оцениваем модель на каждой итерации
+# results = []
+# names = []
+#
+# for name, model in models:
+# 	kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
+# 	cv_results = cross_val_score(model, X_train, Y_train, cv=kfold, scoring='accuracy')
+# 	results.append(cv_results)
+# 	names.append(name)
+# 	print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
+#
+# print(gnb.fit(X_train, Y_train).predict([[5.7,3.0,4.2,1.2]]))
+#
+# # Сравниванием алгоритмы
+# pyplot.boxplot(results, labels=names)
+# pyplot.title('Algorithm Comparison')
+# # pyplot.show()
+
+#https://michael-fuchs-python.netlify.app/2021/02/03/nn-multi-layer-perceptron-classifier-mlpclassifier/
+# df = pd.read_csv(r"C:\work\python\ML\iris.csv")
+# df = pd.read_csv(r'P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\impact_data 20aug test ml.xlsx', on_bad_lines='skip')
+def SFA_predictor(filename = filename,mlp_coefs = '',cm_show =False,loss_curve_show =False,save_mlp_coeffs =False):
+
+    df = pd.read_excel(filename, header=0,dtype={'Обозначение образца': str})# skiprows=[1],
+
+    # print('dff',df.columns)
+    # df1 = df.iloc[:, 0:2]
+    # y = df.iloc[:, 3:5]
+    # x = df.iloc[:, 0:3]
+    # x = df.drop('class', axis=1)
+    y = df['SFA'].astype(int)
+    y_float = df['SFA'].astype(float)
+    spc_no = df['Обозначение образца'].astype(str)
+    # y = df['cat'].astype(int)
+    # print('df.size',df.shape)
+    # x =  df[['SFA_6','SFA_4','Tобразца','Fbf']].astype(int)
+    # x =  df[['Tобразца','Fgy','Fm','Fbf','Fa','Xgy','Xm','Xbf','Xa']].astype(int)
+    # x =  df[['Tобразца','Fgy','Fm','Fbf','Fa','KCV','SFA_6','S0' ]].astype(float)
+    x =  df[['Tобразца','Fbf','Fa','KCV','SFA_6']].astype(float)
+
+    x =  df[['Tобразца','Fgy','Fm','Fbf','Fa','KCV','SFA_6',]].astype(float)
+    # x =  df[['Fbf','Fa','SFA_6']].astype(float)
+###############################
+    # selector = SelectKBest(f_classif, k=5) # select which feature best relate to label(SFA)
+    # selector.fit(x, y)
+    # print(selector.get_support(indices=False))
+    #
+    # lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(x, y)
+    # model = SelectFromModel(lsvc, prefit=True)
+    # X_new = model.transform(x)
+    # print(X_new.shape)
+
+    # print('iii',model.get_support(indices=False))
+#########################
+
+    # x =  df[['fbf-fa','KCV','SFA_6']].astype(float)
+    # x =  df[['Fm']].astype(float)
+    ## plots of features and label (SFA)
+    # col = ['Tобразца','Fgy','Fm','Fbf','Fa','KCV','SFA_6']
+    # for i in col:
+    #     print(i)
+    #     plt.figure()
+        # plt.scatter(y, df[i])
+        # plt.scatter(y, df['Fgy']/df['Fm'])
+        # plt.xlabel('SFA')
+        # plt.ylabel(str(i))
+        # plt.show()    # x =  df[['Tобразца','KCV']].astype(float)
+    ## end of plots of features and label (SFA)
+    # x =  df[['val','val2','val3']].astype(int)
+    # print(x.head())
+    # t=df.columns[df.isna().any()].tolist()
+
+
+    # fig, ax = plt.subplots()
+    # # ax.grid(True, which='both')
+    # # ax.grid(which='major', color='dimgrey', linestyle='-')
+    # # ax.grid(which='minor', color='dimgrey', linestyle='--')
+    # plt.legend()
+    # plt.grid()
+    # y.hist(bins=10, alpha=1, edgecolor='black', linewidth=0.8)
+    # plt.show()
+
+    trainX, testX, trainY, testY = train_test_split(x, y, test_size = 0.2)# case when test_size of spcs are tested
+    if mlp_coefs != '':
+        testX, testY = x, y # case when all spcs are tested. loading coefs and testing all.
+    # print('\n len y=',len(y))
+    # print('\n len testY=',len(testY))
+    # print('\n len trainY=',len(trainY))
+    # sc=StandardScaler()
+    #
+    # sc.fit(trainX)
+
+    st_scaler = StandardScaler().fit(trainX)
+    trainX_scaled = st_scaler.fit_transform(trainX)
+    trainX_scaled =trainX
+    # X_train_scaled = scaler.fit_transform(X_train)
+
+
+    # testY_scaled = st_scaler.transform(testY)
+    # print('hhgg',testY_scaled, (len(testX_scaled[2,:])))
+    # plt.scatter(testX['Fgy'],testY, label="no sc")  # doubt
+    # plt.scatter(testX_scaled[:,2] ,testY, label="sc")  # doubt
+    # plt.legend()
+    # plt.show()
+
+    # sc=sc.fit(trainX)
+
+
+
+    # trainX_scaled = (trainX)
+    # testX_scaled = (testX)
+
+    # mlp_clf = MLPClassifier(hidden_layer_sizes=(150,100,50),
+    #                         max_iter = 300,activation = 'relu',
+    #                         solver = 'adam')
+
+    # mlp_clf = MLPClassifier(hidden_layer_sizes=(150, 100, 50), learning_rate='constant',
+    #                         max_iter = 100,activation = 'identity', alpha=0.0001,
+    #                         solver = 'lbfgs') #2.26
+    mlp_clf = MLPClassifier(hidden_layer_sizes=(150, 100, 50), learning_rate='constant',
+                            max_iter = 500,activation = 'relu', alpha=0.0001,
+                            solver = 'adam') #1.14
+    mlp_clf_val = MLPClassifier(hidden_layer_sizes=(150, 100, 50), learning_rate='constant',
+                            max_iter=500, activation='relu', alpha=0.0001,
+                            solver='adam')  # 1.14
+    mlp_clf = MLPRegressor(hidden_layer_sizes=(150, 50), learning_rate='adaptive',
+                            max_iter = 500,activation = 'relu', alpha=0.001,
+                            solver = 'adam') #5and10mm
+    # mlp_clf = MLPClassifier(hidden_layer_sizes=(150, 100, 50), learning_rate='constant',
+    #                         max_iter = 350,activation = 'relu', alpha=0.0001,
+    #                         solver = 'adam') #5and10mm
+
+    if mlp_coefs == '':
+        mlp_clf.fit(trainX_scaled, trainY)  # расчет коэфф модели по тренир. данным
+        testX_scaled = st_scaler.transform(testX)#scale only after mlp_clf_val.fit
+        testX_scaled=testX # if no scaling
+
+        mlp_clf_val.fit(testX_scaled, testY)  # расчет коэфф модели по тренир. данным
+    else:
+        with open(mlp_coefs, 'rb') as f: # загрузка коэфф модели
+        # with open("C:\work\python\ML\mlp_clf_params-319.pkl", 'rb') as f: # загрузка коэфф модели
+            mlp_clf = pickle.load(f)
+    testX_scaled = st_scaler.transform(testX) #scale only after mlp_clf_val.fit
+    testX_scaled = testX  # if no scaling
+    y_pred = mlp_clf.predict(testX_scaled) # y_pred - np.array
+    y_pred_train = mlp_clf.predict(trainX_scaled) # y_pred - np.array
+    # print('Accuracy: {:.5f}'.format(accuracy_score(testY, y_pred, normalize=True))) # how much is correctly predicted
+
+    print("Training set score: %f" % mlp_clf.score(trainX, trainY))
+    print("Testing set score: %f" % mlp_clf.score(testX, testY))
+    a=abs((testY - y_pred))
+    print('max',max(abs((testY- y_pred))))
+    print('large_error',(len(a[(a > 10)])), )
+    # fig = plot_confusion_matrix(mlp_clf, testX_scaled, testY, display_labels=mlp_clf.classes_)
+    # cm = confusion_matrix(testY, y_pred, labels=mlp_clf.classes_)
+
+    scores = cross_val_score(mlp_clf, x, y, cv=10)
+    print('scores',scores)
+    print("%0.2f mean accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
+
+    if cm_show ==True:
+        cm = confusion_matrix(testY, y_pred, labels=mlp_clf.classes_,)
+        fig = ConfusionMatrixDisplay(confusion_matrix=cm,
+                                     display_labels=mlp_clf.classes_)
+        fig.plot()
+        fig.figure_.suptitle("Confusion Matrix for Iris Dataset")
+        plt.show()
+
+    if loss_curve_show ==True:
+        mse_train=root_mean_squared_error([trainY], [y_pred_train])
+        mse_test=root_mean_squared_error(testY, y_pred)
+        mae_train = mean_squared_log_error([trainY], [y_pred_train])
+        mae_test = mean_squared_log_error(testY, y_pred)
+        # print('mse_train',mse_train)
+        # print('mse_test',mse_test)
+        #
+        # print('mae_train',mae_train)
+        # print('mae_test',mae_test)
+
+        # print('trainY_',trainY,'\n', len(trainY))
+        # print('y_pred_train',y_pred_train,'\n', len(y_pred_train))
+        # print('mlp_clf.loss_curve_',mlp_clf.loss_curve_,'\n', len(mlp_clf.loss_curve_))
+        print(len(testY))
+        plt.plot(mlp_clf.loss_curve_,label="train")
+        plt.title("Loss Curve", fontsize=14)
+        plt.xlabel('Iterations')
+        plt.ylabel('Cost')
+        # mlp_clf.fit(testX,testY)                           #doubt
+        plt.plot(mlp_clf_val.loss_curve_,label="validation") #doubt
+        plt.legend()
+        plt.show()
+
+    # ## start of https://scikit-learn.org/stable/auto_examples/neural_networks/plot_mlp_alpha.html#sphx-glr-auto-examples-neural-networks-plot-mlp-alpha-py
+    ## make 2 features like this: x =  df[['Tобразца','KCV']].astype(float)
+    # h = 0.2  # step size in the mesh
+    #
+    # alphas = np.logspace(-1, 1, 5)
+    #
+    # classifiers = []
+    # names = []
+    # for alpha in alphas:
+    #     classifiers.append(
+    #         make_pipeline(
+    #             StandardScaler(),
+    #             MLPClassifier(
+    #                 solver="lbfgs",
+    #                 alpha=alpha,
+    #                 random_state=1,
+    #                 max_iter=50,
+    #                 early_stopping=True,
+    #                 hidden_layer_sizes=[10, 10],
+    #             ),
+    #         )
+    #     )
+    #     names.append(f"alpha {alpha:.2f}")
+    #
+    # # X, y = make_classification(
+    # #     n_features=2, n_redundant=0, n_informative=2, random_state=0, n_clusters_per_class=1
+    # # )
+    # X= x.to_numpy()
+    # y= y.to_numpy()
+    # print('type(X',type(X))
+    # rng = np.random.RandomState(2)
+    # X += 2 * rng.uniform(size=X.shape)
+    # linearly_separable = (X, y)
+    #
+    # datasets = [
+    #     make_moons(noise=0.3, random_state=0),
+    #     make_circles(noise=0.2, factor=0.5, random_state=1),
+    #     linearly_separable,
+    # ]
+    #
+    # figure = plt.figure(figsize=(17, 9))
+    # i = 1
+    # # iterate over datasets
+    # for X, y in datasets:
+    #     # split into training and test part
+    #     X_train, X_test, y_train, y_test = train_test_split(
+    #         X, y, test_size=0.4, random_state=42
+    #     )
+    #
+    #     x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
+    #     y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
+    #     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    #
+    #     # just plot the dataset first
+    #     cm = plt.cm.RdBu
+    #     cm_bright = ListedColormap(["#FF0000", "#0000FF"])
+    #     ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
+    #     # Plot the training points
+    #     ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright)
+    #     # and testing points
+    #     ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, alpha=0.6)
+    #     ax.set_xlim(xx.min(), xx.max())
+    #     ax.set_ylim(yy.min(), yy.max())
+    #     ax.set_xticks(())
+    #     ax.set_yticks(())
+    #     i += 1
+    #
+    #     # iterate over classifiers
+    #     for name, clf in zip(names, classifiers):
+    #         ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
+    #         clf.fit(X_train, y_train)
+    #         score = clf.score(X_test, y_test)
+    #
+    #         # Plot the decision boundary. For that, we will assign a color to each
+    #         # point in the mesh [x_min, x_max] x [y_min, y_max].
+    #         if hasattr(clf, "decision_function"):
+    #             Z = clf.decision_function(np.column_stack([xx.ravel(), yy.ravel()]))
+    #         else:
+    #             Z = clf.predict_proba(np.column_stack([xx.ravel(), yy.ravel()]))[:, 1]
+    #
+    #         # Put the result into a color plot
+    #         Z = Z.reshape(xx.shape)
+    #         ax.contourf(xx, yy, Z, cmap=cm, alpha=0.8)
+    #
+    #         # Plot also the training points
+    #         ax.scatter(
+    #             X_train[:, 0],
+    #             X_train[:, 1],
+    #             c=y_train,
+    #             cmap=cm_bright,
+    #             edgecolors="black",
+    #             s=25,
+    #         )
+    #         # and testing points
+    #         ax.scatter(
+    #             X_test[:, 0],
+    #             X_test[:, 1],
+    #             c=y_test,
+    #             cmap=cm_bright,
+    #             alpha=0.6,
+    #             edgecolors="black",
+    #             s=25,
+    #         )
+    #
+    #         ax.set_xlim(xx.min(), xx.max())
+    #         ax.set_ylim(yy.min(), yy.max())
+    #         ax.set_xticks(())
+    #         ax.set_yticks(())
+    #         ax.set_title(name)
+    #         ax.text(
+    #             xx.max() - 0.3,
+    #             yy.min() + 0.3,
+    #             f"{score:.3f}".lstrip("0"),
+    #             size=15,
+    #             horizontalalignment="right",
+    #         )
+    #         i += 1
+    #
+    # figure.subplots_adjust(left=0.02, right=0.98)
+    # plt.show()
+    #
+    # ## end of https://scikit-learn.org/stable/auto_examples/neural_networks/plot_mlp_alpha.html#sphx-glr-auto-examples-neural-networks-plot-mlp-alpha-py
+
+    # print(classification_report(testY, y_pred, digits=5))
+
+    # print('answer1712 75=',mlp_clf.predict([[-80,16.8,19.1,8.99,3.5,0.8,286]]))
+    # print('answer1712 75=',mlp_clf.coefs_)
+    # print('ans=',mlp_clf.fit(trainX_scaled, trainY).predict([[11,2,1]]))
+    # print('prob=',mlp_clf.fit(trainX_scaled, trainY).predict_proba([[11,2,1]]))
+    # print('ans=',mlp_clf.fit(trainX_scaled, trainY).predict([[2,2,1]]))
+    # print('prob=',mlp_clf.fit(trainX_scaled, trainY).predict_proba([[11,2,1]]))
+    Xnew = x.values.tolist()
+    Xnew_test = testX.values.tolist()
+    Xnew_train = trainX.values.tolist()
+    ytrue = y.values.tolist()
+    ytrue_test = testY.values.tolist()
+    ytrue_train = trainY.values.tolist()
+    y_float = y_float.values.tolist()
+    spc_no = spc_no.values.tolist()
+    # Xnew = []
+
+    ynew=mlp_clf.predict(Xnew)
+    ynew_test=mlp_clf.predict(Xnew_test)
+    ynew_train=mlp_clf.predict(Xnew_train)
+
+    # print('---',type(testY),testY,'***', y_pred,'y_pred-type', (y_pred.shape))
+    # print('//',type(ynew_test),ynew_test,)
+
+
+    # now you can save it to a file
+    if save_mlp_coeffs == True:
+        with open('mlp_clf_params.pkl', 'wb') as f:
+            pickle.dump(mlp_clf, f, protocol=0)
+
+    # # and later you can load it
+    # with open('mlp_clf_params.pkl', 'rb') as f:
+    #     mlp_clf = pickle.load(f)
+
+    # for i in range(len(Xnew)):
+    #  print("X=%s, Predicted=%s, True=%s" % (Xnew[i], ynew[i],ytrue[i]))
+    old_percentile_list = pd.DataFrame(
+        {'ynew': ynew,
+         'ytrue': ytrue,
+         # 'y_float': y_float,
+         'spc_no': spc_no,
+
+         })
+    percentile_list = pd.DataFrame(
+        {'ynew': ynew_test,
+         'ytrue': ytrue_test,
+         # 'y_float': y_float,
+         # 'spc_no': spc_no,
+
+        })
+    percentile_list2 = pd.DataFrame(
+        {
+    'ynewtrain': ynew_train,
+         'ytruetrain': ytrue_train,
+        })
+
+    with pd.ExcelWriter(r'C:\work\статья\impact_ai.xlsx',
+                        mode='w', engine="openpyxl",) as writer:
+        percentile_list.to_excel(writer, index = False,sheet_name='test')
+        percentile_list2.to_excel(writer, index = False,sheet_name='train')
+        # old_percentile_list.to_excel(writer, index = False,sheet_name='t')
+    # # hyper parameter tunung
+    # param_grid = {
+    #     'hidden_layer_sizes': [(150,100,50), ],
+    #     'max_iter': [150,300,500],
+    #     'activation': ['tanh', 'relu','identity','identity'],
+    #     'solver': ['sgd', 'adam','lbfgs'],
+    #     'alpha': [0.0001, 0.001,0.00001],
+    #     'learning_rate': ['constant','adaptive','invscaling'],
+    # }
+    # grid = GridSearchCV(mlp_clf, param_grid, n_jobs= -1, cv=5)
+    # grid.fit(trainX_scaled, trainY)
+    # #
+    # print('grid',grid.best_params_, type(grid.best_params_))
+
+    # grid_predictions = grid.predict(Xnew)
+    #
+    # print('Accuracy grid: {:.2f}'.format(accuracy_score(ynew, grid_predictions)))
+
+def SFA_pipe(filename=filename, mlp_coefs='', cm_show=False, loss_curve_show=False, save_mlp_coeffs=False):
+
+    df = pd.read_excel(filename, header=0, dtype={'Обозначение образца': str})  # skiprows=[1],
+    y = df['SFA'].astype(int)
+    y_float = df['SFA'].astype(float)
+    spc_no = df['Обозначение образца'].astype(str)
+    x = df[['Tобразца', 'Fbf', 'Fa', 'KCV', 'SFA_6']].astype(float)
+    x = df[['Tобразца', 'Fgy', 'Fm', 'Fbf', 'Fa', 'KCV', 'SFA_6', ]].astype(float)
+    trainX, testX, trainY, testY = train_test_split(x, y, test_size = 0.2)# case when test_size of spcs are tested
+    if mlp_coefs != '':
+        testX, testY = x, y # case when all spcs are tested. loading coefs and testing all..
+    pipe = Pipeline(steps=[('scaler', StandardScaler()),
+                           ('lr', MLPClassifier(hidden_layer_sizes=(150, 50), learning_rate='adaptive',
+                            max_iter=500, activation='relu', alpha=0.001,
+                            solver='adam'))],
+                    verbose=True)
+
+    # st_scaler = StandardScaler()#.fit(trainX)
+    trainX_scaled = pipe.transform(trainX)
+
+
+    if mlp_coefs == '':
+        pipe.fit(trainX_scaled, trainY)  # расчет коэфф модели по тренир. данным
+        testX_scaled = pipe.transform(testX)#scale only after mlp_clf_val.fit
+        # testX_scaled=testX # if no scaling
+
+        # mlp_clf_val.fit(testX_scaled, testY)  # расчет коэфф модели по тренир. данным
+    else:
+        with open(mlp_coefs, 'rb') as f: # загрузка коэфф модели
+        # with open("C:\work\python\ML\mlp_clf_params-319.pkl", 'rb') as f: # загрузка коэфф модели
+            mlp_clf = pickle.load(f)
+        testX_scaled = pipe.transform(testX)  # scale only after mlp_clf_val.fit
+
+    y_pred = pipe.predict(testX_scaled) # y_pred - np.array
+    y_pred_train = pipe.predict(trainX_scaled) # y_pred - np.array
+    # print('Accuracy: {:.5f}'.format(accuracy_score(testY, y_pred, normalize=True))) # how much is correctly predicted
+
+    print("Training set score: %f" % pipe.score(trainX, trainY))
+    print("Testing set score: %f" % pipe.score(testX, testY))
+    a=abs((testY - y_pred))
+    print('max',max(abs((testY- y_pred))))
+    print('large_error',(len(a[(a > 10)])), )
+
+filename = r"C:\work\статья\impact_data.xlsx"
+filename = r"C:\work\статья\impact_data_10mm.xlsx"
+# filename = r"C:\work\статья\impact_data_10mm_all.xlsx"
+filename_shuffled = r"C:\work\статья\impact_data_10mm_shuffled.xlsx"
+filename_05 = r"C:\work\статья\impact_data_10mm_0.5.xlsx"
+filename_075 = r"C:\work\статья\impact_data_10mm_0.75.xlsx"
+# filename = r"P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\обработка кривых\impact_data_bid27.xlsx"
+# filename = r"C:\work\статья\impact_data-289(wo27).xlsx"
+# filename = r"C:\work\статья\ML\impact_data_less100.xlsx"
+filename_train = r"C:\work\статья\impact_data_10mm_train_set.xlsx"
+filename_test = r"C:\work\статья\impact_data_10mm_test_set.xlsx"
+
+# SFA_predictor(mlp_coefs='mlp_clf_params-289(wo27).pkl',save_mlp_coeffs=False, cm_show=False,loss_curve_show=True,filename=filename)
+print('***0.5')
+SFA_predictor(mlp_coefs='',save_mlp_coeffs=True, cm_show=False,loss_curve_show=False,filename=filename_05)
+print('***0.75')
+SFA_predictor(mlp_coefs='',save_mlp_coeffs=True, cm_show=False,loss_curve_show=False,filename=filename_075)
+SFA_predictor(mlp_coefs='',save_mlp_coeffs=True, cm_show=False,loss_curve_show=False,filename=filename)
+
+

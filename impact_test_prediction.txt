@@ -44,11 +44,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 import warnings
 warnings.filterwarnings("ignore")
-filename = r'P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\impact_data 20aug test ml.xlsx'
 filename = r"C:\work\статья\impact_data_reduced2.xlsx"
 filename = r"C:\work\статья\impact_data.xlsx"
 # filename = r'C:\work\статья\impact_data-289(wo27).xlsx'
-# filename = r"P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\обработка кривых\impact_data_bid27.xlsx"
 
 
 # filename=r"C:\work\статья\impact_data-mini.xlsx"
@@ -56,10 +54,6 @@ filename = r"C:\work\статья\impact_data.xlsx"
 # filename=r"C:\work\статья\impact_data_reduced3.xlsx"
 # filename=r"C:\work\статья\impact_data.xlsx"
 # filename = r"C:\work\python\ML\test.xlsx"
-# # Загрузка датасета
-# url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
-# names = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'class']
-# dataset = read_csv(url, names=names)
 #
 # # Разделение датасета на обучающую и контрольную выборки
 # array = dataset.values
@@ -106,9 +100,7 @@ filename = r"C:\work\статья\impact_data.xlsx"
 # pyplot.title('Algorithm Comparison')
 # # pyplot.show()
 
-#https://michael-fuchs-python.netlify.app/2021/02/03/nn-multi-layer-perceptron-classifier-mlpclassifier/
 # df = pd.read_csv(r"C:\work\python\ML\iris.csv")
-# df = pd.read_csv(r'P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\impact_data 20aug test ml.xlsx', on_bad_lines='skip')
 def SFA_predictor(filename = filename,mlp_coefs = '',cm_show =False,loss_curve_show =False,save_mlp_coeffs =False):
 
     df = pd.read_excel(filename, header=0,dtype={'Обозначение образца': str})# skiprows=[1],
@@ -401,8 +393,6 @@ def SFA_predictor(filename = filename,mlp_coefs = '',cm_show =False,loss_curve_s
     # figure.subplots_adjust(left=0.02, right=0.98)
     # plt.show()
     #
-    # ## end of https://scikit-learn.org/stable/auto_examples/neural_networks/plot_mlp_alpha.html#sphx-glr-auto-examples-neural-networks-plot-mlp-alpha-py
-
     # print(classification_report(testY, y_pred, digits=5))
 
     # print('answer1712 75=',mlp_clf.predict([[-80,16.8,19.1,8.99,3.5,0.8,286]]))
@@ -532,7 +522,6 @@ filename = r"C:\work\статья\impact_data_10mm.xlsx"
 filename_shuffled = r"C:\work\статья\impact_data_10mm_shuffled.xlsx"
 filename_05 = r"C:\work\статья\impact_data_10mm_0.5.xlsx"
 filename_075 = r"C:\work\статья\impact_data_10mm_0.75.xlsx"
-# filename = r"P:\_S\S124 ТМК НТЦ\01_Отдел Материаловедения\Лаборатория МиС\Результаты\Архив результатов\ДВС\обработка кривых\impact_data_bid27.xlsx"
 # filename = r"C:\work\статья\impact_data-289(wo27).xlsx"
 # filename = r"C:\work\статья\ML\impact_data_less100.xlsx"
 filename_train = r"C:\work\статья\impact_data_10mm_train_set.xlsx"
